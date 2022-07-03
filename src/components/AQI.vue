@@ -28,7 +28,7 @@ export default {
     async function getData() {
       allData = await $axios.get('/test2', {
         params: {
-          date: '201301',
+          date: route.params.time,
           province: route.params.province2
         }
       })
@@ -46,7 +46,6 @@ export default {
         },
         legend: {
           bottom: 5,
-          data: ['Beijing', 'Shanghai', 'Guangzhou'],
           itemGap: 20,
           textStyle: {
             color: '#fff',
@@ -104,13 +103,21 @@ export default {
         }
       };
       chartInstance.setOption(dataOption)
-      window.onresize = function () {
-        chartInstance.resize()
+    }
+    function screenAdapter() {
+      // 测试算出来的 合适的字体大小
+      this.titleFontSize = (document.getElementById('aqiChart').offsetWidth / 100) * 3.6
+
+      const adapterOption = {
+
       }
+      chartInstance.setOption(adapterOption)
+      chartInstance.resize()
     }
     onMounted(() => {
       initChart()
       getData()
+      window.addEventListener('resize', screenAdapter)
     });
     watchEffect(() => {
       getData()

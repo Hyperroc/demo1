@@ -16,15 +16,25 @@ export default {
     const router = useRouter()
     let $echarts = inject("echarts")
     let mapData = reactive({});
+    let myChart = null;
     async function getState() {
       mapData = await axios.get("http://localhost:8080/map/china.json")
     }
+    function screenAdapter() {
+      this.titleFontSize = (document.getElementById('mp').offsetWidth / 100) * 3.6
+
+      const adapterOption = {
+      }
+      myChart.setOption(adapterOption)
+      myChart.resize()
+    }
     onMounted(() => {
       getState().then(() => {
-        console.log("map", mapData)
+        //console.log("map", mapData)
         $echarts.registerMap("china", mapData.data)
-        let myChart = $echarts.init(document.getElementById("mp"))
+        myChart = $echarts.init(document.getElementById("mp"))
         myChart.setOption({
+          backgroundColor: '#ffffff',
           geo: {
             map: "china"
           }
@@ -40,6 +50,7 @@ export default {
           })
         })
       })
+      window.addEventListener('resize', screenAdapter)
     })
   }
 }

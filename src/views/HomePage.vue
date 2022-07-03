@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header class="header">
-
+      <Head />
     </header>
 
     <div class="body">
@@ -11,13 +11,25 @@
 
         </div>
         <div id="left-bottom">
-          <MapTmp />
+          <Bubble />
         </div>
       </section>
       <section class="center">
         <div id="center-top">
-          <MapTest />
-          <ElTest />
+          <section class="c-left">
+            <div id="c-left-top">
+              <Daily />
+            </div>
+            <div id="c-left-bottom">
+              <MiniMap />
+            </div>
+          </section>
+          <section class="c-right">
+            <MapTest />
+          </section>
+        </div>
+        <div id="center-middle">
+          <Line />
         </div>
         <div id="center-bottom">
           <Parallel />
@@ -40,12 +52,14 @@
 <script>
 import Ring from "@/components/Ring";
 import MapTest from "@/components/MapTest";
-//import Daily from "@/components/Daily";
 import AQI from "@/components/AQI";
 import Parallel from "@/components/Parallel";
 import HeatMap from "@/components/HeatMap";
-import MapTmp from "@/components/MapTmp";
-import ElTest from "@/components/ElTest";
+import Bubble from "@/components/Bubble";
+import Line from "@/components/Line";
+import Head from "@/components/Head";
+import Daily from "@/components/Daily";
+import MiniMap from "@/components/Bar";
 import {inject} from "vue";
 
 export default {
@@ -55,8 +69,11 @@ export default {
     AQI,
     Parallel,
     HeatMap,
-    MapTmp,
-    ElTest
+    Bubble,
+    Line,
+    Head,
+    Daily,
+    MiniMap
   },
   setup() {
     let $echarts = inject("echarts")
@@ -87,50 +104,82 @@ export default {
   margin-top: 10px;
   .left {
     height: 100%;
-    width: 27.6%;
+    width: 28%;
     #left-top {
       height: 53%;
-      border: 1px solid brown;
+      //border: 1px solid brown;
       position: relative;
     }
     #left-bottom {
       height: 31%;
-      border: 1px solid brown;
+      //border: 1px solid brown;
       margin-top: 25px;
       position: relative;
     }
   }
   .center {
     height: 100%;
-    width: 41.5%;
-    margin-left: 1.6%;
-    margin-right: 1.6%;
+    width: 44%;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
     #center-top {
       width: 100%;
-      height: 56%;
-      border: 1px solid brown;
+      height: 48%;
+      //border: 1px solid brown;
+      position: relative;
+      display: flex;
+      .c-left {
+        height: 100%;
+        width: 30%;
+        position: relative;
+        #c-left-top {
+          height: 49%;
+          width: 100%;
+          position: relative;
+        }
+        #c-left-bottom {
+          height: 49%;
+          width: 100%;
+          margin-top: 12px;
+          position: relative;
+        }
+        //border: 1px solid brown;
+      }
+      .c-right {
+        height: 100%;
+        width: 70%;
+        margin-left: 1%;
+        position: relative;
+        //border: 1px solid brown;
+      }
+    }
+    #center-middle {
+      margin-top: 13px;
+      width: 100%;
+      height: 16%;
+      //border: 1px solid brown;
       position: relative;
     }
     #center-bottom {
-      margin-top: 25px;
+      margin-top: 12px;
       width: 100%;
-      height: 28%;
-      border: 1px solid brown;
+      height: 20%;
+      //border: 1px solid brown;
       position: relative;
     }
   }
   .right {
     height: 100%;
-    width: 27.6%;
+    width: 28%;
     #right-top {
       height: 46%;
-      border: 1px solid brown;
+      //border: 1px solid brown;
       position: relative;
     }
     #right-bottom {
       height: 38%;
       margin-top: 25px;
-      border: 1px solid brown;
+      //border: 1px solid brown;
       position: relative;
     }
   }

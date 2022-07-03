@@ -17,8 +17,8 @@ export default {
     let allData = reactive({})
     const route = useRoute()
     const lineStyle = {
-      width: 1,
-      opacity: 0.5
+      width: 1.2,
+      opacity: 0.6
     }
     const schema = [
       { name: 'date', index: 0, text: '日期' },
@@ -38,30 +38,22 @@ export default {
     async function getData() {
       allData = await $axios.get('/test3', {
         params: {
-          date: '201301',
+          date: route.params.time,
           province: route.params.province2
         }
       })
-      console.log('hello', allData)
+      //console.log('hello', allData)
       updateChart()
     }
     function updateChart() {
       const dataOption = {
-        backgroundColor: '#333',
-        legend: {
-          bottom: 30,
-          data: route.params.province,
-          itemGap: 20,
-          textStyle: {
-            color: '#fff',
-            fontSize: 14
-          }
-        },
+        backgroundColor: '#ffffff',
+
         tooltip: {
           padding: 10,
-          backgroundColor: '#222',
-          borderColor: '#777',
-          borderWidth: 1
+          backgroundColor: '#ffffff',
+          borderColor: '#bebebe',
+          borderWidth: 0
         },
         parallelAxis: [
           {
@@ -85,26 +77,26 @@ export default {
           }
         ],
         visualMap: {
-          show: true,
+          show: false,
           min: 0,
           max: 150,
           dimension: 2,
           inRange: {
-            color: ['#d94e5d', '#eac736', '#50a3ba'].reverse()
+            color: ['#d94e5d', '#efad0b', '#50a3ba'].reverse()
             // colorAlpha: [0, 1]
           }
         },
         parallel: {
           left: '5%',
-          right: '18%',
-          bottom: 100,
+          right: '8%',
+          bottom: 40,
           parallelAxisDefault: {
             type: 'value',
             name: 'AQI指数',
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
-              color: '#fff',
+              color: '#000000',
               fontSize: 12
             },
             axisLine: {
@@ -121,25 +113,34 @@ export default {
               show: false
             },
             axisLabel: {
-              color: '#fff'
+              color: '#000000'
             }
           }
         },
         series: {
-          name: 'Beijing',
+          name: route.params.province2,
           type: 'parallel',
           lineStyle: lineStyle,
-          data: allData.data.data
+          data: allData.data.data,
+          smooth: true,
         }
       };
       chartInstance.setOption(dataOption)
-      window.onresize = function () {
-        chartInstance.resize()
+    }
+    function screenAdapter() {
+      // 测试算出来的 合适的字体大小
+      this.titleFontSize = (document.getElementById('parChart').offsetWidth / 100) * 3.6
+
+      const adapterOption = {
+
       }
+      chartInstance.setOption(adapterOption)
+      chartInstance.resize()
     }
     onMounted(() => {
       initChart()
       getData()
+      window.addEventListener('resize', screenAdapter)
     });
     watchEffect(() => {
       getData()

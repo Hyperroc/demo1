@@ -20,7 +20,7 @@ import {useRouter} from "vue-router"
           name: 'index',
           params: {
             province: 'changchun',
-            province2: '北京',
+            province2: '吉林',
             time: '20130101'
           }
         })
@@ -31,6 +31,6 @@ import {useRouter} from "vue-router"
 
 <style>
 body {
-  background: beige ;
+  background: #e7e8ef;
 }
 </style>

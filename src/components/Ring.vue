@@ -14,46 +14,46 @@ export default {
     let $echarts = inject("echarts")
     let $axios = inject("axios")
     const route = useRoute()
-    const month = 1;
+    let month=[];
+    let myChart = null;
+
+    for (let i = 2013; i < 2019; i++) {
+      for (let j = 1; j < 13; j++) {
+        month.push(i*100+j);
+      }
+    }
 
     async function initData() {
       const cityUrl = 'http://localhost:8080/static/City/month_' + route.params.province + '.json';
       $axios.get(cityUrl).then(response =>  {
-        console.log(response.data)
-        let myChart = $echarts.init(document.getElementById("onChart"), 'chalk')
+        //console.log(response.data)
+        myChart = $echarts.init(document.getElementById("onChart"), 'chalk')
         myChart.setOption({
+          backgroundColor: '#ffffff',
           graphic: [{ //环形图中间添加文字
             type: 'text', //通过不同top值可以设置上下显示
             left: 'center',
             top: 'center',
             style: {
-              text: route.params.province,
+              text: route.params.province2,
               fill: '#000', //文字的颜色
-              fontSize: 12,
+              fontSize: 20,
             }
           }
           ],
           title: {
-            text: '城市月均数据',
-            padding: 5,
+            text: '省份月均数据',
+            left: 'center',
+            padding: 10,
             itemGap: 0,
             textStyle: {
               fontSize: 20,
               color: '#000'
             },
-            subtext: '数据来自中国高分辨率大气污染再分析数据集',
-            sublink: 'http://naq.cicidata.top:10443/chinavis/opendata'
+            subtext: '当前省份72个月的月均数据',
           },
           legend: {
-            data: ['TEMP', {
-              name: 'RH',
-              lineStyle: 'inherit'
-            }, 'PSFC', 'AQI', 'PM2.5', 'PM10', 'NO2,CO', 'CO', 'O3', 'NO2'],
-            itemStyle: 'inherit',
-            lineStyle: 'inherit',
-            orient: "vertical",
-            top: "middle",
-            right: "0%",
+            top: 'bottom',
           },
           polar: {
             center: ['50%', '50%'],
@@ -209,14 +209,21 @@ export default {
             }
           ],
         });
-        window.onresize = function () {
-          myChart.resize()
-        }
       })
+    }
+    function screenAdapter() {
+      // 测试算出来的 合适的字体大小
+      this.titleFontSize = (document.getElementById('onChart').offsetWidth / 100) * 3.6
+
+      const adapterOption = {
+      }
+      myChart.setOption(adapterOption)
+      myChart.resize()
     }
     // 钩子
     onMounted(() => {
       initData()
+      window.addEventListener('resize', screenAdapter)
       return {
         initData
       }

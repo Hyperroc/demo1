@@ -1,52 +1,48 @@
 <template>
   <div class="com-container">
-    <div class="com-chart" id="dailyChart"></div>
+    <div class="com-chart" id="barChart"></div>
   </div>
 </template>
 
 <script>
 import {inject, onMounted, reactive, watchEffect} from "vue";
 import {useRoute} from "vue-router"
+
 export default {
-  name: "DailyChart",
+  name: "aqiChart",
   setup() {
     let $echarts = inject("echarts")
     let $axios = inject("axios")
     let chartInstance = null
     let allData = reactive({})
-    let allData2 = reactive({})
+    let cols = []
     const route = useRoute()
-
     function initChart() {
-      chartInstance = $echarts.init(document.getElementById('dailyChart'))
+      chartInstance = $echarts.init(document.getElementById('barChart'))
       const initOption = {}
       chartInstance.setOption(initOption)
     }
     async function getData() {
-      allData = await $axios.get('/test', {
+      allData = await $axios.get('/test4', {
         params: {
           date: route.params.time,
           province: route.params.province2
         }
       })
-      allData2 = await $axios.get('/test4', {
-        params: {
-          date: route.params.time,
-          province: route.params.province2
+      allData.data.data[4].value /= 1000
+      allData.data.data[2].value -= 273
+      if (cols.length == 0) {
+        for (let i = 0; i < 5; i++) {
+          cols.push(allData.data.data[i].name)
         }
-      })
-      allData.data.data.pop()
-      console.log('data2', allData2)
+      }
       updateChart()
     }
     function updateChart() {
       const dataOption = {
         backgroundColor: '#fff',
-        tooltip: {
-          trigger: 'item'
-        },
         title: {
-          text: '日均污染指标',
+          text: '日均气候指标',
           left: 'center',
           padding: 10,
           itemGap: 2,
@@ -55,47 +51,35 @@ export default {
             color: '#000'
           },
         },
-        legend: {
-          top: '10%',
-          left: 'center',
+        tooltip: {
+          trigger: 'item'
+        },
+        xAxis: {
+          type: 'category',
+          data: cols
+        },
+        yAxis: {
+          type: 'value'
         },
         series: [
           {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            center: ['50%', '60%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '40',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: allData.data.data
-          },
+            data: allData.data.data,
+            type: 'bar',
+            showBackground: true,
+            backgroundStyle: {
+              color: 'rgba(180, 180, 180, 0.2)'
+            }
+          }
         ]
       };
       chartInstance.setOption(dataOption)
     }
     function screenAdapter() {
       // 测试算出来的 合适的字体大小
-      this.titleFontSize = (document.getElementById('dailyChart').offsetWidth / 100) * 3.6
+      this.titleFontSize = (document.getElementById('barChart').offsetWidth / 100) * 3.6
 
       const adapterOption = {
+
       }
       chartInstance.setOption(adapterOption)
       chartInstance.resize()
@@ -104,11 +88,9 @@ export default {
       initChart()
       getData()
       window.addEventListener('resize', screenAdapter)
-      //screenAdapter()
-    })
+    });
     watchEffect(() => {
       getData()
-      //screenAdapter()
     })
     return {
       allData
@@ -118,5 +100,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-
+.com-chart {
+  width: auto;
+}
 </style>

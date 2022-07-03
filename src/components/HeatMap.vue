@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {inject, onMounted, reactive} from "vue";
+import {inject, onMounted, reactive,watchEffect} from "vue";
 import {useRoute} from "vue-router"
 
 export default {
@@ -16,7 +16,7 @@ export default {
     let chartInstance = null
     let allData = reactive({})
     let x_day;
-    const data=[];
+    const data = [];
     const y_category = [
       'AQI', 'PM2.5', 'PM10',
       'SO2', 'NO2', 'CO', 'O3'
@@ -28,14 +28,15 @@ export default {
       let cur = Date.parse(str);
       let firstdate = Date.parse('2013/01/01');
       let diffDate = cur - firstdate;
-      if(diffDate<1000*3600*24*3){
+      //console.log('diffDate', diffDate)
+      if (diffDate < 1000 * 3600 * 24 * 3) {
         x_day = ['20130101','20130102','20130103','20130104','20130105','20130106','20130107']
         return 1;
       }
-      for(var i =-3;i<4;i++){
-        var curdate = new Date(str);
-        var month = '';
-        var daytime = '';
+      for (var i = -3; i < 4; i++) {
+        let curdate = new Date(str);
+        let month = '';
+        let daytime = '';
         curdate.setDate(date.getDate()+i);
         if(curdate.getMonth()<10){
           month = '0' + (curdate.getMonth()+1).toString();
@@ -47,7 +48,7 @@ export default {
         }else{
           daytime = curdate.getDate().toString();
         }
-        var curstr = curdate.getFullYear().toString() + month + daytime;
+        let curstr = curdate.getFullYear().toString() + month + daytime;
         x_day.push(curstr);
       }
     }
@@ -70,10 +71,11 @@ export default {
       let firstdate = Date.parse('2013/01/01');
       let diffDate = Math.abs(cur - firstdate);
       let index = Math.floor(diffDate / (1000 * 3600 * 24));
-      if(index < 3){
+      if (index < 3) {
         index = 3
       }
-      for(var j = 0;j<7;j++){
+      data.length = 0
+      for(let j = 0; j < 7; j++){
         data.push([j, 0,allData.data[index+j-3][0]]);
         data.push([j, 1,Math.floor(allData.data[index+j-3][1])]);
         data.push([j, 2,Math.floor(allData.data[index+j-3][2])]);
@@ -87,13 +89,14 @@ export default {
     }
     function updateChart() {
       const dataOption = {
+        backgroundColor: '#ffffff',
         title: {
           text: '矩形热力图',
-          top: 4,
-          padding: 5,
+          left: 'center',
+          padding: 10,
           itemGap: 2,
           textStyle: {
-            fontSize: 14,
+            fontSize: 20,
             color: '#000'
           },
           subtext: '七天之内的污染数据'
@@ -104,7 +107,7 @@ export default {
         grid: {
           height: "70%",
           width: "85%",
-          top: 40
+          top: 80
         },
         xAxis: {
           type: 'category',
@@ -149,13 +152,25 @@ export default {
         ]
       };
       chartInstance.setOption(dataOption)
-      window.onresize = function () {
-        chartInstance.resize()
+    }
+    function screenAdapter() {
+      // 测试算出来的 合适的字体大小
+      this.titleFontSize = (document.getElementById('heatChart').offsetWidth / 100) * 3.6
+
+      const adapterOption = {
+
       }
+      chartInstance.setOption(adapterOption)
+      chartInstance.resize()
     }
     onMounted(() => {
       select_x_day(route.params.time)
       initChart()
+      getData()
+      window.addEventListener('resize', screenAdapter)
+    })
+    watchEffect(() => {
+      console.log('time change', route.params.time)
       getData()
     })
     return {

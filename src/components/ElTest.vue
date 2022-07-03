@@ -1,21 +1,25 @@
 <template>
-  <div class="demo-datetime-picker">
-    <el-date-picker
-        v-model="value1"
-        type="datetime"
-        placeholder="Select date and time"
-    />
+  <div class="demo-date-picker">
+      <el-date-picker
+          v-model="value1"
+          type="date"
+          placeholder="Pick a day"
+      />
   </div>
 </template>
 
 <script>
-import {onMounted, ref} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
+//import {useRoute} from "vue-router"
 export default {
   name: 'ElTest',
   setup() {
-    const value1 = ref(1)
+    let value1 = ref('')
     onMounted(() => {
-      console.log('time', value1)
+      console.log('time init', value1)
+    })
+    watchEffect(() => {
+      console.log('time change', value1)
     })
     return {
       value1
